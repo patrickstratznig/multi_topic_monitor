@@ -5,6 +5,7 @@ import time
 import json
 import yaml
 import importlib
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy
 
 class MultiTopicMonitor(Node):
     def __init__(self, config_path):
@@ -28,17 +29,21 @@ class MultiTopicMonitor(Node):
                 self.get_logger().error(f"Could not import message type: {type_str}")
                 continue
             self.topic_types[topic] = msg_class
+
+            qos = QoSProfile(depth=10)
+            qos.reliability = QoSReliabilityPolicy.BEST_EFFORT
+
             self.create_subscription(
                 msg_class,
                 topic,
                 self.create_callback(topic),
-                10
+                qos
             )
             self.get_logger().info(f"Subscribed to {topic} as {type_str}")
 
         # Status publisher
         self.status_pub = self.create_publisher(String, '/multi_topic_monitor', 10)
-        self.create_timer(5.0, self.check_and_publish_status)
+        self.create_timer(4.0, self.check_and_publish_status)
 
     def import_message_class(self, type_str):
         try:
@@ -71,7 +76,7 @@ class MultiTopicMonitor(Node):
 def main(args=None):
     import sys
     if len(sys.argv) < 2:
-        print("Usage: ros2 run your_package multi_topic_monitor.py /path/to/config.yaml")
+        print("Usage: ros2 run your_package multi_topic_monitor.py /path/to/config.yaml, using default config")
         return
 
     config_path = sys.argv[1]

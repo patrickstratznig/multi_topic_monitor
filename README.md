@@ -1,0 +1,1 @@
+Monitors the topics defined in the config file, publishes a JSON with 1 or 0 to /multi_topic_monitor. Publish 0 if the topic exists but is not recieving any messages, for example if a sensor is dying.

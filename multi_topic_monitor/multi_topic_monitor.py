@@ -11,7 +11,6 @@ class MultiTopicMonitor(Node):
     def __init__(self, config_path):
         super().__init__('multi_topic_monitor')
 
-        self.timeout_seconds = 5.0
         self.last_received = {}
 
         # Load config
@@ -19,6 +18,7 @@ class MultiTopicMonitor(Node):
             config = yaml.safe_load(f)
 
         self.topics_config = config.get('topics', {})
+        self.timeout_seconds = config.get('timeout', 5.0)
         self.topic_types = {}
         self.last_received = {topic: 0 for topic in self.topics_config}
 
@@ -76,7 +76,7 @@ class MultiTopicMonitor(Node):
 def main(args=None):
     import sys
     if len(sys.argv) < 2:
-        print("Usage: ros2 run your_package multi_topic_monitor.py /path/to/config.yaml, using default config")
+        print("Usage: ros2 run multi_topic_monitor multi_topic_monitor.py /path/to/config.yaml")
         return
 
     config_path = sys.argv[1]

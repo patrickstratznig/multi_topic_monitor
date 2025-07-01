@@ -52,13 +52,19 @@ The node publishes a status message to `/multi_topic_monitor` as a `std_msgs/msg
 
 ```json
 {
-  /front_camera/rgb/image_raw: 1,
-  /top_lidar/points: 0
+  "/front_camera/rgb/image_raw": 1,
+  "/top_lidar/points": 0
 }
 ```
 
 * `1` = Topic is active (messages received within timeout).
 * `0` = Topic is inactive (no messages received within timeout).
+
+## 🧩 Implementation Notes
+
+* Message types are dynamically imported using Python’s importlib.
+* Subscriptions use `QoSReliabilityPolicy.BEST_EFFORT` for compatibility with sensors like cameras and lidars.
+* Status is checked and published every 4 seconds (can be changed via `create_timer` interval).
 
 ## 🛠 Dependencies
 
